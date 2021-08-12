@@ -16,6 +16,15 @@ namespace kickcat
         void printInfo() const;
         void printPDOs() const;
         void printErrorCounters() const;
+        int computeErrorCounters() const;
+
+        /// \brief  Compare the number of errors since last call
+        /// \return True if too many errors happened between two calls. Return false otherwise.
+        bool checkRelativeErrorCounters(int max_relative_errors);
+
+        /// \brief  Check the total number of errors since start of the slave
+        /// \return True if too many errors detected since start of the slave. Return false otherwise.
+        bool checkAbsoluteErrorCounters(int max_absolute_errors);
 
         uint16_t address;
         uint8_t al_status{State::INVALID};
@@ -62,6 +71,7 @@ namespace kickcat
         PIMapping output;
 
         ErrorCounters error_counters;
+        int previous_errors_sum{0};
 
     private:
         void parseStrings(uint8_t const* section_start);

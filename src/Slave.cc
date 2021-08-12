@@ -205,4 +205,39 @@ namespace kickcat
         }
         printf("\n");
     }
+
+
+    bool Slave::checkRelativeErrorCounters(int max_relative_errors)
+    {
+        bool is_too_many_errors = false;
+        int current_error_sum = computeErrorCounters();
+        if (current_error_sum - previous_errors_sum > max_relative_errors )
+        {
+            is_too_many_errors = true;
+        }
+
+        previous_errors_sum = current_error_sum;
+        return is_too_many_errors;
+    }
+
+
+    bool Slave::checkAbsoluteErrorCounters(int max_absolute_errors)
+    {
+        return computeErrorCounters() > max_absolute_errors;
+    }
+
+
+    int Slave::computeErrorCounters() const
+    {
+        int sum = 0;
+        for (int32_t i = 0; i < 4; ++i)
+        {
+            sum += error_counters.rx[i].invalid_frame;
+            sum += error_counters.rx[i].physical_layer;
+            sum += error_counters.forwarded[i];
+            sum += error_counters.lost_link[i];
+        }
+
+        return sum;
+    }
 }
